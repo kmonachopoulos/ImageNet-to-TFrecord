@@ -13,11 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-
-
-
-#### python build_imagenet_data.py -validation_directory /home/ubuntu/bfloat/ILSVRC2012_img/val -output_directory /home/ubuntu/bfloat/ILSVRC2012_img_val_tf_records
-
 """Converts ImageNet data to TFRecords file format with Example protos.
 
 The raw ImageNet data set is expected to reside in JPEG files located in the
@@ -70,18 +65,6 @@ serialized Example proto. The Example proto contains the following fields:
     e.g. 'n01440764'
   image/class/text: string specifying the human-readable version of the label
     e.g. 'red fox, Vulpes vulpes'
-
-  image/object/bbox/xmin: list of integers specifying the 0+ human annotated
-    bounding boxes
-  image/object/bbox/xmax: list of integers specifying the 0+ human annotated
-    bounding boxes
-  image/object/bbox/ymin: list of integers specifying the 0+ human annotated
-    bounding boxes
-  image/object/bbox/ymax: list of integers specifying the 0+ human annotated
-    bounding boxes
-  image/object/bbox/label: integer specifying the index in a classification
-    layer. The label ranges from [1, 1000] where 0 is not used. Note this is
-    always identical to the image label.
 
 Note that the length of xmin is identical to the length of xmax, ymin and ymax
 for each example.
@@ -146,20 +129,6 @@ tf.app.flags.DEFINE_string('imagenet_metadata_file',
                            'imagenet_metadata.txt',
                            'ImageNet metadata file')
 
-# This file is the output of process_bounding_box.py
-# Assumes each line of the file looks like:
-#
-#   n00007846_64193.JPEG,0.0060,0.2620,0.7545,0.9940
-#
-# where each line corresponds to one bounding box annotation associated
-# with an image. Each line can be parsed as:
-#
-#   <JPEG file name>, <xmin>, <ymin>, <xmax>, <ymax>
-#
-# Note that there might exist mulitple bounding box annotations associated
-# with an image file.
-#tf.app.flags.DEFINE_string('bounding_box_file','./imagenet_2012_bounding_boxes.csv','Bounding box file')
-
 FLAGS = tf.app.flags.FLAGS
 
 
@@ -192,9 +161,6 @@ def _convert_to_example(filename, image_buffer, label, synset, human,
     label: integer, identifier for the ground truth for the network
     synset: string, unique WordNet ID specifying the label, e.g., 'n02323233'
     human: string, human-readable label, e.g., 'red fox, Vulpes vulpes'
-    bbox: list of bounding boxes; each box is a list of integers
-      specifying [xmin, ymin, xmax, ymax]. All boxes are assumed to belong to
-      the same label as the image label.
     height: integer, image height in pixels
     width: integer, image width in pixels
   Returns:
@@ -345,9 +311,6 @@ def _process_image_files_batch(coder, thread_index, ranges, name, filenames,
     synsets: list of strings; each string is a unique WordNet ID
     labels: list of integer; each integer identifies the ground truth
     humans: list of strings; each string is a human-readable label
-    bboxes: list of bounding boxes for each image. Note that each entry in this
-      list might contain from 0+ entries corresponding to the number of bounding
-      box annotations for the image.
     num_shards: integer number of shards for this data set.
   """
   # Each thread produces N shards where N = int(num_shards / num_threads).
@@ -409,9 +372,6 @@ def _process_image_files(name, filenames, synsets, labels, humans, num_shards):
     synsets: list of strings; each string is a unique WordNet ID
     labels: list of integer; each integer identifies the ground truth
     humans: list of strings; each string is a human-readable label
-    bboxes: list of bounding boxes for each image. Note that each entry in this
-      list might contain from 0+ entries corresponding to the number of bounding
-      box annotations for the image.
     num_shards: integer number of shards for this data set.
   """
   assert len(filenames) == len(synsets)
@@ -553,8 +513,6 @@ def _process_dataset(name, directory, num_shards, synset_to_human):
     num_shards: integer number of shards for this data set.
     synset_to_human: dict of synset to human labels, e.g.,
       'n02119022' --> 'red fox, Vulpes vulpes'
-    image_to_bboxes: dictionary mapping image file names to a list of
-      bounding boxes. This list contains 0+ bounding boxes.
   """
   filenames, synsets, labels = _find_image_files(directory, FLAGS.labels_file)
   humans = _find_human_readable_labels(synsets, synset_to_human)
