@@ -39,7 +39,7 @@ The tf-record file should be inside `path-of-tf-record-directory/validation-0000
 Testing on slim's pre-trained inception_v3 :
 
 ```
-python eval_image_classifier.py --alsologtostderr --checkpoint_path=/pre-trained_models/inception_v3.ckpt --dataset_dir=/path-of-tf-record-directorys/ --dataset_split_name=validation  --model_name=inception_v3
+python eval_image_classifier.py --alsologtostderr --checkpoint_path=/pre-trained_models/inception_v3.ckpt --dataset_dir=/path-of-tf-record-directory/ --dataset_split_name=validation  --model_name=inception_v3
 ```
 
 ###### Top-1 Accuracy = 0.7798	| Top-1 Recall = 0.93942
@@ -49,7 +49,7 @@ python eval_image_classifier.py --alsologtostderr --checkpoint_path=/pre-trained
 Testing on slim's pre-trained resnet_v1_50 :
 
 ```
-python eval_image_classifier.py --alsologtostderr --checkpoint_path=/pre-trained_models/inception_v3.ckpt --dataset_dir=/path-of-tf-record-directorys/ --dataset_split_name=validation  --labels_offset=1 --model_name=resnet_v1_50.ckpt
+python eval_image_classifier.py --alsologtostderr --checkpoint_path=/pre-trained_models/inception_v3.ckpt --dataset_dir=/path-of-tf-record-directory/ --dataset_split_name=validation  --labels_offset=1 --model_name=resnet_v1_50.ckpt
 ```
 
 ###### Top-1 Accuracy = 0.75202	| Top-1 Recall = 0.92194
