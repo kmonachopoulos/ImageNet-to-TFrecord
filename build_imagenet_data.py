@@ -167,9 +167,9 @@ def _convert_to_example(filename, image_buffer, label, synset, human,
     Example proto
   """
 
-  colorspace = 'RGB'
+  colorspace = b'RGB'
   channels = 3
-  image_format = 'JPEG'
+  image_format = b'JPEG'
 
   example = tf.train.Example(features=tf.train.Features(feature={
       'image/height': _int64_feature(height),
@@ -177,10 +177,10 @@ def _convert_to_example(filename, image_buffer, label, synset, human,
       'image/colorspace': _bytes_feature(colorspace),
       'image/channels': _int64_feature(channels),
       'image/class/label': _int64_feature(label),
-      'image/class/synset': _bytes_feature(synset),
-      'image/class/text': _bytes_feature(human),
+      'image/class/synset': _bytes_feature(bytes(synset,'utf-8')),
+      'image/class/text': _bytes_feature(bytes(human,'utf-8')),
       'image/format': _bytes_feature(image_format),
-      'image/filename': _bytes_feature(os.path.basename(filename)),
+      'image/filename': _bytes_feature(bytes(os.path.basename(filename),'utf-8')),
       'image/encoded': _bytes_feature(image_buffer)}))
   return example
 
@@ -273,7 +273,7 @@ def _process_image(filename, coder):
     width: integer, image width in pixels.
   """
   # Read the image file.
-  image_data = tf.gfile.FastGFile(filename, 'r').read()
+  image_data = tf.gfile.GFile(filename, 'rb').read()
 
   # Clean the dirty data.
   if _is_png(filename):
